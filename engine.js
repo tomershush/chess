@@ -8,8 +8,8 @@ module.exports = {
 
         checkMove(move) //TODO: Add piece movement. Start from pawns.
         {
-            let start = move.substr(0, 2);
-            let dest = move.substr(2, 4);
+            let start = move.substring(0, 2);
+            let dest = move.substring(2, 4);
 
             let moveStat = 0;
 
