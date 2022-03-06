@@ -26,9 +26,10 @@ const START_PIECE_DATA = {
   "00":"br",  // Black Rooks.
   "07":"br",
   
+  
   "70":"wr",  // White Rooks.
   "77":"wr",
-  
+  /*
   "01":"bn",  // Black Knights.
   "06":"bn",
   
@@ -48,6 +49,7 @@ const START_PIECE_DATA = {
   "04":"bk",  // Black King.
 
   "74":"wk"   // White King.
+  */
 }
 
 let boardData = START_PIECE_DATA;

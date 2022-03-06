@@ -49,8 +49,22 @@ module.exports = {
                             moveStat = -1;
                         }
                         break;
+
+                    case 'r':
+                        console.log("Rook");
+                        if(this.moveRook(start, dest))
+                        {
+                            this.board[dest] = this.board[start];
+                            delete this.board[start];
+                        }
+                        else
+                        {
+                            moveStat = -1;
+                        }
+                        break;
                 
                     default:
+                        moveStat = -1;
                         break;
                 }
 
@@ -79,7 +93,16 @@ module.exports = {
                     // Check if movement is 1 or 2 squares.
                     if(Number(startPos.charAt(0)) - Number(destPos.charAt(0)) <= 2 && Number(startPos.charAt(0)) - Number(destPos.charAt(0)) >= 1)
                     {
-                        stat = true;
+                        // In case it moves 2, make sure no pieces are in the way.
+                        // Checking if tile before destination has a piece.
+                        if(Number(startPos.charAt(0)) - Number(destPos.charAt(0)) == 2 && this.board[(Number(destPos.charAt(0)) + 1) + destPos.charAt(1)] != null)
+                        {
+                            stat = false;
+                        }
+                        else
+                        {
+                            stat = true;
+                        }
                     }
                 }
                 else   
@@ -97,7 +120,16 @@ module.exports = {
                     // Check if movement is 1 or 2 squares.
                     if(Number(destPos.charAt(0) - Number(startPos.charAt(0))) <= 2 && Number(destPos.charAt(0)) - Number(startPos.charAt(0)) >= 1)
                     {
-                        stat = true;
+                        // In case it moves 2, make sure no pieces are in the way.
+                        // Checking if tile before destination has a piece.
+                        if(Number(destPos.charAt(0)) - Number(startPos.charAt(0)) == 2 && this.board[(Number(destPos.charAt(0)) - 1) + destPos.charAt(1)] != null)
+                        {
+                            stat = false;
+                        }
+                        else
+                        {
+                            stat = true;
+                        }
                     }
                 }
                 else
@@ -125,34 +157,93 @@ module.exports = {
             return stat;
         }
 
-        moveRook(startPos, destPos, color)  //TODO: Add Rook movement.
+        moveRook(startPos, destPos)  //TODO: Add Rook movement.
         {
-            let stat = false;
+            let stat = true;
+            let moveTiles = 0;
+            let tempTile = "";
             if(startPos.charAt(0) == destPos.charAt(0)) // Moving in rank.
             {
+                tempTile = startPos.charAt(0);  // Getting rank.
+
                 if(startPos.charAt(1) < destPos.charAt(1))  // Moving right.
                 {
+                    moveTiles = Number(destPos.charAt(1)) - Number(startPos.charAt(1)); // Number of tiles between start and destination.
 
+                    /* 
+                    Looping over the tiles in the path.
+                    Starting from 1 to prevent checking starting tile.
+                    */
+                    for(let i = 1; i < moveTiles && stat; i++)
+                    {
+                        tempTile += (Number(startPos.charAt(1)) + i);   // Calculating the path tile.
+
+                        if(this.board[tempTile] != null)    // If a piece is present in path, move is illegal.
+                        {
+                            stat = false;
+                        }
+                        tempTile = startPos.charAt(0);  // Reset path tile.
+                    }
                 }
                 else if(startPos.charAt(1) > destPos.charAt(1)) // Moving left.
                 {
+                    moveTiles = Number(startPos.charAt(1)) - Number(destPos.charAt(1)); // Note: Maybe switch to Math.abs instead of multiple calculations?
 
+                    // See Right movement for explanation.
+                    for(let i = 1; i < moveTiles && stat; i++)
+                    {
+                        tempTile += (Number(startPos.charAt(1)) - i);
+
+                        if(this.board[tempTile] != null)
+                        {
+                            stat = false;
+                        }
+                        tempTile = startPos.charAt(0);
+                    }
                 }    
             }
             else if(startPos.charAt(1) == destPos.charAt(1))    // Moving in file.
             {
+                tempTile = startPos.charAt(1);  // Getting file.
+                
                 if(startPos.charAt(0) < destPos.charAt(0))  // Moving down.
                 {
+                    moveTiles = Number(destPos.charAt(0)) - Number(startPos.charAt(0)); // Number of tiles between start and destination.
 
+                    // See right Rook movement for explanation.
+                    for(let i = 1; i < moveTiles && stat; i++)
+                    {
+                        tempTile = (Number(startPos.charAt(0)) + i) + tempTile;   
+
+                        if(this.board[tempTile] != null)   
+                        {
+                            stat = false;
+                        }
+                        tempTile = startPos.charAt(1);
+                    }
                 }
                 else if(startPos.charAt(0) > destPos.charAt(0)) // Moving up.
                 {
+                    moveTiles = Number(startPos.charAt(0)) - Number(destPos.charAt(0)); // Number of tiles between start and destination.
 
+                    // See right Rook movement for explanation.
+                    for(let i = 1; i < moveTiles && stat; i++)
+                    {
+                        tempTile = (Number(startPos.charAt(0)) - i) + tempTile;   
+
+                        if(this.board[tempTile] != null)   
+                        {
+                            stat = false;
+                        }
+                        tempTile = startPos.charAt(1);
+                    }
                 }
             }
-            
-
-
+            else    // If move is illegal for Rook.
+            {
+                stat = false;
+            }
+            return stat;
         }
 
     }
