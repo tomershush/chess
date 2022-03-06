@@ -29,13 +29,13 @@ const START_PIECE_DATA = {
   
   "70":"wr",  // White Rooks.
   "77":"wr",
-  /*
+  
   "01":"bn",  // Black Knights.
   "06":"bn",
   
   "71":"wn",  // White Knights.
   "76":"wn",
-  
+  /*
   "02":"bb",  // Black Bishops.
   "05":"bb",
   

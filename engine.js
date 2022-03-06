@@ -62,6 +62,18 @@ module.exports = {
                             moveStat = -1;
                         }
                         break;
+
+                    case 'n':
+                        if(this.moveKnight(start, dest))
+                        {
+                            this.board[dest] = this.board[start];
+                            delete this.board[start];
+                        }
+                        else
+                        {
+                            moveStat = -1;
+                        }
+                        break;
                 
                     default:
                         moveStat = -1;
@@ -157,7 +169,7 @@ module.exports = {
             return stat;
         }
 
-        moveRook(startPos, destPos)  //TODO: Add Rook movement.
+        moveRook(startPos, destPos)
         {
             let stat = true;
             let moveTiles = 0;
@@ -244,6 +256,36 @@ module.exports = {
                 stat = false;
             }
             return stat;
+        }
+
+        /*
+        Method for checking Knight movement.
+        Input: Starting position and destination position.
+        Output: True if move is possible, false otherwise.
+        */
+        moveKnight(startPos, destPos) 
+        {
+            let stat = false;
+            if(Math.abs(Number(startPos.charAt(0)) - Number(destPos.charAt(0))) == 2)   // If Knight is moving Up/Down.
+            {
+                if(Math.abs(Number(startPos.charAt(1)) - Number(destPos.charAt(1))) == 1)   // Checking that knight is moving only 1 square diagonally.
+                {
+                    stat = true;
+                }
+            }
+            else if(Math.abs(Number(startPos.charAt(1)) - Number(destPos.charAt(1))) == 2)  // If Knight is moving Right/Left.
+            {
+                if(Math.abs(Number(startPos.charAt(0)) - Number(destPos.charAt(0))) == 1)   // Checking that knight is moving only 1 square diagonally.
+                {
+                    stat = true;
+                }
+            }
+            return stat;
+        }
+
+        moveBishop(startPos, destPos)   // TODO: Add Bishop movement.
+        {
+
         }
 
     }
