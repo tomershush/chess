@@ -18,7 +18,10 @@ module.exports = {
                 
                 moveStat = -1;
             }
-
+            else if(start == dest)
+            {
+                moveStat = -3;
+            }
             else
             {
                 // Check if wrong turn.
@@ -86,7 +89,19 @@ module.exports = {
                             moveStat = -1;
                         }
                         break;
-                
+
+                    case 'q':
+                        if(this.moveQueen(start, dest))
+                        {
+                            this.board[dest] = this.board[start];
+                            delete this.board[start];
+                        }
+                        else
+                        {
+                            moveStat = -1;
+                        }
+                        break;
+
                     default:
                         moveStat = -1;
                         break;
@@ -367,7 +382,7 @@ module.exports = {
                     for(let i = 1; i < pathLen && stat; i++)
                     {   
                         // Checking if tile in path is empty.
-                        console.log("LD: " + String(Number(startRank + i)) + String(Number(startFile - i)));
+
                         if(this.board[String(Number(startRank) + i) + String(Number(startFile) - i)] != null)
                         {
                             stat = false;
@@ -377,6 +392,22 @@ module.exports = {
 
             }
 
+            return stat;
+        }
+
+        /*
+        A method to validate Queen movement.
+        Input: Starting position and destination position.
+        Output: True if move is legal, false otherwise.
+        */
+        moveQueen(startPos, destPos)
+        {
+            let stat = false;
+            // Queen is a combination of the Rook and Bishop, thus using their methods to validate move.
+            if(this.moveBishop(startPos, destPos) || this.moveRook(startPos, destPos))
+            {
+                stat = true;
+            }
             return stat;
         }
 

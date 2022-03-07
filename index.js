@@ -41,11 +41,11 @@ const START_PIECE_DATA = {
   
   "72":"wb",  // White Bishops.
   "75":"wb",
-  /*
+  
   "03":"bq",  // Black Queen.
 
   "73":"wq",  // White Queen.
-
+  /*
   "04":"bk",  // Black King.
 
   "74":"wk"   // White King.
@@ -102,6 +102,11 @@ rout.get('/form', (req, res) => {
     {
       console.log("Wrong Turn!");
       res.send("-2");
+    }
+    else if(stat == -3)
+    {
+      console.log("Cancelled Move!");
+      res.send("-3");
     }
     else
     {

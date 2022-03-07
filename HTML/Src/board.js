@@ -42,7 +42,7 @@ moveData.onload = function()
     {
         statP.innerHTML = "Wrong Turn!";
     }
-    else    // Clear the status paragraph if the move was successful.
+    else if(this.responseText != '-3')   // Clear the status paragraph if the move was successful.
     {
         statP.innerHTML = "";
         document.getElementById(prevMove.substring(0, 2)).innerHTML = "";
