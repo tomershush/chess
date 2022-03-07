@@ -74,6 +74,18 @@ module.exports = {
                             moveStat = -1;
                         }
                         break;
+
+                    case 'b':
+                        if(this.moveBishop(start, dest))
+                        {
+                            this.board[dest] = this.board[start];
+                            delete this.board[start];
+                        }
+                        else
+                        {
+                            moveStat = -1;
+                        }
+                        break;
                 
                     default:
                         moveStat = -1;
@@ -283,9 +295,89 @@ module.exports = {
             return stat;
         }
 
-        moveBishop(startPos, destPos)   // TODO: Add Bishop movement.
+        /*
+        Method for checking Bishop movement.
+        Input: Starting position and destination position.
+        Output: True if move is possible, false otherwise.
+        */
+        moveBishop(startPos, destPos)   // FIXME: Directions got mixed up: Down is increasing, Up is decreasing. Left and Right are the same (?)
         {
+            let stat = false;
+            let pathLen = 0;
+            let startRank = startPos.charAt(0);
+            let startFile = startPos.charAt(1);
+            let destRank = destPos.charAt(0);
+            let destFile = destPos.charAt(1);
 
+            console.log("start rank: " + startRank + " start file: " + startFile + " dest rank: " + destRank + " dest file: " + destFile);
+
+            // Checking if movement is in diagonal.
+            if(Math.abs(Number(startRank) - Number(destRank)) == Math.abs(Number(startFile) - Number(destFile))) 
+            {
+                stat = true;
+                pathLen = Math.abs(Number(startRank) - Number(destRank));   // Calculating length of diagonal path.
+                console.log(pathLen);
+
+                if(startRank > destRank && startFile < destFile)    // Moving Right and Up.
+                {
+                    /*
+                    Looping through tiles in path to check if path is empty.
+                    Starting from 1 to prevent checking the starting tile.
+                    */
+                    for(let i = 1; i < pathLen && stat; i++)
+                    {   
+                        // Checking if tile in path is empty.
+                        if(this.board[String(Number(startRank) - i) + String(Number(startFile) + i)] != null)
+                        {
+                            stat = false;
+                        }
+                    }
+                }
+                else if(startRank < destRank && startFile < destFile)   // Moving Right and Down.
+                {
+                    // Check Bishop Right and Up movement for explanation.
+                    
+                    for(let i = 1; i < pathLen && stat; i++)
+                    {   
+                        // Checking if tile in path is empty.
+                        if(this.board[String(Number(startRank) + i) + String(Number(startFile) + i)] != null)
+                        {
+                            stat = false;
+                        }
+                    }
+                }
+                else if(startRank > destRank && startFile > destFile)   // Moving Left and Up.
+                {
+                    // Check Bishop Right and Up movement for explanation.
+                    console.log("chek");
+                    for(let i = 1; i < pathLen && stat; i++)
+                    {   
+                        // Checking if tile in path is empty.
+                        console.log("Path tile num: " + i + String(Number(startRank + i)) + String(Number(startFile - i)));
+                        if(this.board[String(Number(startRank) - i) + String(Number(startFile) - i)] != null)
+                        {
+                            stat = false;
+                        }
+                    }                    
+                }
+                else    // Moving Left and Down.
+                {
+                    // Check Bishop Right and Up movement for explanation.
+                    
+                    for(let i = 1; i < pathLen && stat; i++)
+                    {   
+                        // Checking if tile in path is empty.
+                        console.log("LD: " + String(Number(startRank + i)) + String(Number(startFile - i)));
+                        if(this.board[String(Number(startRank) + i) + String(Number(startFile) - i)] != null)
+                        {
+                            stat = false;
+                        }
+                    }
+                }
+
+            }
+
+            return stat;
         }
 
     }
