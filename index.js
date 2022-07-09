@@ -1,5 +1,5 @@
 const express = require('express');
-const engine = require('./engine.js');
+const engine = require('./Engine.js');
 const app = express();
 const rout = express.Router();
 const port = 3000;
@@ -51,7 +51,7 @@ const START_PIECE_DATA = {
 }
 
 let boardData = START_PIECE_DATA;
-let board = new engine.Piece(boardData);
+let board = new engine.Engine(boardData);
 
 
 app.use(express.static('HTML')) // Using the static HTML and CSS files.
@@ -80,8 +80,8 @@ rout.get('/form', (req, res) => {
   });
 
   rout.post('/boardData', (req, res) => {
-    let boardData = JSON.stringify(board.board);  
-    res.send(board.board);
+    let boardData = JSON.stringify(board.globalBoard);  
+    res.send(board.globalBoard);
     res.end()
   });
 
@@ -89,17 +89,23 @@ rout.get('/form', (req, res) => {
     let stat;
     console.log(req.body.move);
     
-    stat = board.checkMove(req.body.move)
-
+    stat = board.checkMove(req.body.move);
+    console.log(stat);
+    
     if(stat == -1)
     {
-      console.log("Illegal move!");
+      console.log("Illegal coordinates!");
       res.send("-1");
     }
     else if(stat == -2)
     {
       console.log("Wrong Turn!");
       res.send("-2");
+    }
+    else if(stat == -4)
+    {
+      console.log("Illegal move!");
+      res.send("-4");
     }
     else
     {

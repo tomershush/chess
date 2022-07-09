@@ -49,6 +49,11 @@ const START_PIECE_DATA = {
   }
 
   const TAKEN_PIECE = "99";
+  const COORD_ERROR = -1;
+  const TURN_ERROR = -2;
+  const CANCEL_MOVE = -3;
+  const MOVEMENT_ERROR = -4;
+
 
 export class Engine{
     activePieces: pieces.Piece[];
@@ -88,24 +93,24 @@ export class Engine{
             if(this.globalBoard[start] == null)   // Check if trying to move empty tile.
             {
                 
-                moveStat = -1;
+                moveStat = COORD_ERROR;
             }
             else if(start == dest)
             {
-                moveStat = -3;
+                moveStat = CANCEL_MOVE;
             }
             else
             {
                 // Check if wrong turn.
                 if((this.globalBoard[start].charAt(0) == 'b' && this.turn) || (this.globalBoard[start].charAt(0) == 'w' && !this.turn)) 
                 {
-                    moveStat = -2;
+                    moveStat = TURN_ERROR;
                 }
                 if(this.globalBoard[dest] != null)    // Check if the destination has same-color piece.
                 {
                     if(this.globalBoard[start].charAt(0) == this.globalBoard[dest].charAt(0))
                     {
-                        moveStat = -1;
+                        moveStat = COORD_ERROR;
                     }
                 }
             }
@@ -132,7 +137,7 @@ export class Engine{
                         }
                         else
                         {
-                            moveStat = -1;
+                            moveStat = MOVEMENT_ERROR;
                         }
                         break;
                     }

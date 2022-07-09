@@ -34,13 +34,17 @@ moveData.onload = function()
     let statP = document.getElementsByTagName("p")[0];  // Get the status displaying paragraph.
     console.log(this.responseText);
 
-    if(this.responseText == '-1')   // If the status is for an illegal move.
+    if(this.responseText == '-1')   // If the status is for an illegal coordinates.
     {
-        statP.innerHTML = "Illegal move!";
+        statP.innerHTML = "Illegal coordinates!";
     }
     else if(this.responseText == '-2')  // If the status is for wrong turn.
     {
         statP.innerHTML = "Wrong Turn!";
+    }
+    else if(this.responseText == '-4')  // If the status is for wrong move.
+    {
+        statP.innerHTML = "Illegal move!";
     }
     else    // Clear the status paragraph if the move was successful.
     {
