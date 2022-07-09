@@ -1,160 +1,118 @@
-module.exports = {
-
-    Piece : class {
-        constructor(board) {
-            this.board = board; // Getting JSON object representing board.
-            this.turn = false; // Setting turn to White.
+"use strict";
+exports.__esModule = true;
+exports.Engine = void 0;
+var pieces = require("./Pieces.js");
+var START_PIECE_DATA = {
+    "10": "bp",
+    "11": "bp",
+    "12": "bp",
+    "13": "bp",
+    "14": "bp",
+    "15": "bp",
+    "16": "bp",
+    "17": "bp",
+    "60": "wp",
+    "61": "wp",
+    "62": "wp",
+    "63": "wp",
+    "64": "wp",
+    "65": "wp",
+    "66": "wp",
+    "67": "wp",
+    "00": "br",
+    "07": "br",
+    "70": "wr",
+    "77": "wr",
+    "01": "bn",
+    "06": "bn",
+    "71": "wn",
+    "76": "wn",
+    "02": "bb",
+    "05": "bb",
+    "72": "wb",
+    "75": "wb",
+    "03": "bq",
+    "73": "wq"
+};
+var TAKEN_PIECE = "99";
+var Engine = /** @class */ (function () {
+    function Engine() {
+        this.globalBoard = START_PIECE_DATA;
+        this.prevBoard = START_PIECE_DATA;
+        this.turn = true;
+        this.prevTakenPiece = -1;
+        var piecePostitions = Object.keys(this.globalBoard); // Getting piece positions.
+        var tempId = 0; // Id for individual piece.
+        this.activePieces = [];
+        // Adding the pawns.
+        for (var i = 0; i < 8; i++) {
+            var tempPiece = new pieces.Pawn(piecePostitions[i], "p", false, tempId); // Black pawns.
+            this.activePieces.push(tempPiece);
+            tempId++;
         }
-
-        checkMove(move) //TODO: Add piece movement. Start from pawns.
-        {
-            let start = move.substring(0, 2);
-            let dest = move.substring(2, 4);
-
-            let moveStat = 0;
-
-            if(this.board[start] == null)   // Check if trying to move empty tile.
-            {
-                
-                moveStat = -1;
+        for (var i = 7; i < 16; i++) {
+            var tempPiece = new pieces.Pawn(piecePostitions[i], "p", true, tempId); // White pawns.
+            this.activePieces.push(tempPiece);
+            tempId++;
+        }
+    }
+    Engine.prototype.checkMove = function (move) {
+        var start = move.substring(0, 2);
+        var dest = move.substring(2, 4);
+        var moveStat = 0;
+        if (this.globalBoard[start] == null) // Check if trying to move empty tile.
+         {
+            moveStat = -1;
+        }
+        else if (start == dest) {
+            moveStat = -3;
+        }
+        else {
+            // Check if wrong turn.
+            if ((this.globalBoard[start].charAt(0) == 'b' && this.turn) || (this.globalBoard[start].charAt(0) == 'w' && !this.turn)) {
+                moveStat = -2;
             }
-
-            else
-            {
-                // Check if wrong turn.
-                if((this.board[start].charAt(0) == 'w' && this.turn) || (this.board[start].charAt(0) == 'b' && !this.turn)) 
-                {
-                    moveStat = -2;
+            if (this.globalBoard[dest] != null) // Check if the destination has same-color piece.
+             {
+                if (this.globalBoard[start].charAt(0) == this.globalBoard[dest].charAt(0)) {
+                    moveStat = -1;
                 }
-                if(this.board[dest] != null)    // Check if the destination has same-color piece.
-                {
-                    if(this.board[start].charAt(0) == this.board[dest].charAt(0))
-                    {
+            }
+        }
+        if (moveStat == 0) // Switch turn upon successful move.
+         {
+            for (var i = 0; i < this.activePieces.length; i++) {
+                if (this.activePieces[i].position == start) {
+                    if (this.activePieces[i].move(dest, this.globalBoard)) {
+                        this.prevBoard = this.globalBoard;
+                        if (this.globalBoard[dest]) {
+                            this.takePiece(dest); // If a piece is being taken, mark it as taken.
+                        }
+                        this.globalBoard[dest] = this.globalBoard[start];
+                        delete this.globalBoard[start];
+                        //TODO: After adding check analysis, update the pieces location there.
+                        this.activePieces[i].position = dest;
+                    }
+                    else {
                         moveStat = -1;
                     }
+                    break;
                 }
             }
-
-            if(moveStat == 0)   // Switch turn upon successful move.
-            {
-                switch (this.board[start].charAt(1)) {
-                    case 'p':
-                        if(this.movePawn(start, dest, this.board[start].charAt(0)))
-                        {
-                            this.board[dest] = this.board[start];
-                            delete this.board[start];
-                        }
-                        else
-                        {
-                            moveStat = -1;
-                        }
-                        break;
-                
-                    default:
-                        break;
-                }
-
-                if(moveStat == 0)
-                {
-                    this.turn = !this.turn;
-                }
+            if (moveStat == 0) {
+                this.turn = !this.turn;
             }
-
-            return moveStat;
         }
-
-        /*
-        A method to handle Pawn movement.
-        The method checks whether or not the move is legal for a pawn.
-        Input: Starting Pawn position, destination Pawn position and Pawn's color.
-        Output: True if move is legal, false otherwise.
-        */
-        movePawn(startPos, destPos, color)
-        {
-            let stat = false;
-            if(color == 'w')    // Handle white Pawns.
-            {
-                if(startPos.charAt(0) == "6")   // Check if it's the first move.
-                {   
-                    // Check if movement is 1 or 2 squares.
-                    if(Number(startPos.charAt(0)) - Number(destPos.charAt(0)) <= 2 && Number(startPos.charAt(0)) - Number(destPos.charAt(0)) >= 1)
-                    {
-                        stat = true;
-                    }
-                }
-                else   
-                {
-                    if(Number(startPos.charAt(0)) - Number(destPos.charAt(0)) == 1) // Check if movement is only 1 square.
-                    {
-                        stat = true;
-                    }
-                }
+        return moveStat;
+    };
+    Engine.prototype.takePiece = function (piecePos) {
+        for (var i = 0; i < this.activePieces.length; i++) {
+            if (this.activePieces[i].position == piecePos) {
+                this.prevTakenPiece = this.activePieces[i].id;
+                this.activePieces[i].position = TAKEN_PIECE;
             }
-            else    // Handle Black Pawns.
-            {
-                if(startPos.charAt(0) == "1")   // Check if first move.
-                {
-                    // Check if movement is 1 or 2 squares.
-                    if(Number(destPos.charAt(0) - Number(startPos.charAt(0))) <= 2 && Number(destPos.charAt(0)) - Number(startPos.charAt(0)) >= 1)
-                    {
-                        stat = true;
-                    }
-                }
-                else
-                {
-                    if(Number(destPos.charAt(0)) - Number(startPos.charAt(0)) == 1) // Check if movement is only 1 square.
-                    {
-                        stat = true;
-                    }
-                }
-            }
-
-            if(startPos.charAt(1) != destPos.charAt(1)) // In case the pawn is trying to take.
-            {
-                // Check if the taking is legal. Legal if destination contains enemy piece and is only 1 square away.
-                if(this.board[destPos] == null || Math.abs(Number(startPos.charAt(0)) - Number(destPos.charAt(0))) != 1)
-                {
-                    stat = false;
-                }
-            }
-            else if(this.board[destPos] != null)    // Check if pawns tries to advance into another piece.
-            {
-                stat = false;
-            }
-
-            return stat;
         }
-
-        moveRook(startPos, destPos, color)  //TODO: Add Rook movement.
-        {
-            let stat = false;
-            if(startPos.charAt(0) == destPos.charAt(0)) // Moving in rank.
-            {
-                if(startPos.charAt(1) < destPos.charAt(1))  // Moving right.
-                {
-
-                }
-                else if(startPos.charAt(1) > destPos.charAt(1)) // Moving left.
-                {
-
-                }    
-            }
-            else if(startPos.charAt(1) == destPos.charAt(1))    // Moving in file.
-            {
-                if(startPos.charAt(0) < destPos.charAt(0))  // Moving down.
-                {
-
-                }
-                else if(startPos.charAt(0) > destPos.charAt(0)) // Moving up.
-                {
-
-                }
-            }
-            
-
-
-        }
-
-    }
-
-};
+    };
+    return Engine;
+}());
+exports.Engine = Engine;
